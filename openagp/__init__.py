@@ -16,6 +16,7 @@ from openagp.events import (
     verify,
 )
 from openagp.keys import generate_keypair
+from openagp.policy import Decision, PolicyEvaluationError, evaluate
 
 __version__ = "0.0.0"
 
@@ -26,6 +27,9 @@ __all__ = [
     "generate_keypair",
     "canonicalize",
     "validate",
+    "evaluate",
+    "Decision",
     "InvalidSignature",
     "SchemaValidationError",
+    "PolicyEvaluationError",
 ]

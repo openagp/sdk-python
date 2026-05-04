@@ -22,7 +22,6 @@ from openagp import sign, verify
 from openagp._canonical import canonicalize
 from openagp.events import _build_signing_input
 
-
 VECTORS_DIR = Path(__file__).resolve().parents[2] / "spec" / "test-vectors"
 
 
