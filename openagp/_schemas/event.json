@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/event.json",
+  "title": "AGP canonical event (Flow A)",
+  "description": "A single signed event emitted by a vendor to a plane. v0.1.",
+  "type": "object",
+  "properties": {
+    "agp_version": { "$ref": "common.json#/$defs/agp_version" },
+    "schema_version": { "$ref": "common.json#/$defs/schema_version" },
+    "event_id": { "$ref": "common.json#/$defs/event_id" },
+    "occurred_at": { "$ref": "common.json#/$defs/iso8601_utc" },
+
+    "actor": {
+      "type": "object",
+      "properties": {
+        "vendor": { "$ref": "common.json#/$defs/vendor_id" },
+        "agent_id": { "$ref": "common.json#/$defs/agent_id" },
+        "human_principal": { "$ref": "common.json#/$defs/human_principal" }
+      },
+      "required": ["vendor", "agent_id"]
+    },
+
+    "action": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "common.json#/$defs/action_type" },
+        "tool_name": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "target_resource": { "type": "string", "maxLength": 2048 },
+        "input_summary": { "type": "string", "maxLength": 2048 },
+        "output_summary": { "type": "string", "maxLength": 2048 },
+        "input_hash": { "$ref": "common.json#/$defs/hash_ref" },
+        "output_hash": { "$ref": "common.json#/$defs/hash_ref" }
+      },
+      "required": ["type"]
+    },
+
+    "policy": {
+      "type": "object",
+      "description": "Policy decision applied by the vendor. Required for L2 conformance.",
+      "properties": {
+        "decision": { "$ref": "common.json#/$defs/decision" },
+        "rule_id": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "policy_hash": { "$ref": "common.json#/$defs/hash_ref" },
+        "rationale": { "type": "string", "maxLength": 1024 },
+        "fallback_used": {
+          "type": "boolean",
+          "description": "True if the L3 plane was unreachable and the vendor applied the policy.fallback rule."
+        }
+      },
+      "required": ["decision", "rule_id", "policy_hash"]
+    },
+
+    "lineage": {
+      "type": "object",
+      "properties": {
+        "trace_id": { "$ref": "common.json#/$defs/trace_id" },
+        "parent_event_id": {
+          "anyOf": [
+            { "$ref": "common.json#/$defs/event_id" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+
+    "signature": { "$ref": "common.json#/$defs/signature" }
+  },
+
+  "required": [
+    "agp_version",
+    "schema_version",
+    "event_id",
+    "occurred_at",
+    "actor",
+    "action",
+    "signature"
+  ],
+
+  "$comment": "Per spec §3.9, AGP receivers MUST ignore unknown top-level and nested fields rather than rejecting messages. additionalProperties is therefore deliberately omitted. SDKs SHOULD warn on unknown fields at parse time but MUST NOT reject."
+}

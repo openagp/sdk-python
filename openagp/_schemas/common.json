@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/common.json",
+  "title": "AGP common types",
+  "description": "Shared definitions reused across AGP message schemas. v0.1.",
+  "$defs": {
+    "agp_version": {
+      "type": "string",
+      "pattern": "^0\\.1$",
+      "description": "AGP wire-protocol version. v0.1 only."
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Schema version for this specific message kind. Independent of agp_version."
+    },
+    "iso8601_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 / ISO 8601 timestamp in UTC. MUST end with 'Z'.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+    },
+    "ulid": {
+      "type": "string",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "Crockford-base32 ULID, 26 characters."
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "Prefixed ULID identifying an event. Unique per vendor."
+    },
+    "trace_id": {
+      "type": "string",
+      "pattern": "^trc_[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "Prefixed ULID identifying a trace across multiple events."
+    },
+    "decision_request_id": {
+      "type": "string",
+      "pattern": "^drq_[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "Prefixed ULID identifying a real-time decision request (Flow C)."
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Vendor-scoped identifier for an agent. Opaque to the plane."
+    },
+    "vendor_id": {
+      "type": "string",
+      "format": "hostname",
+      "description": "FQDN identifying the vendor (e.g. anthropic.com). Authoritative form is the vendor's registry record."
+    },
+    "human_principal": {
+      "type": "string",
+      "pattern": "^user_hash_[0-9a-f]{16,64}$",
+      "description": "SHA-256-derived hash of the upstream user identifier. Plaintext user IDs MUST NOT appear here."
+    },
+    "hash_ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Algorithm-prefixed hex hash. Only sha256 is permitted in v0.1."
+    },
+    "key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Identifier matching a public key entry in the actor's discovery document."
+    },
+    "signature": {
+      "type": "object",
+      "description": "Ed25519 detached signature with bound key_id and alg. See ADR 0001.",
+      "properties": {
+        "key_id": { "$ref": "#/$defs/key_id" },
+        "alg": {
+          "type": "string",
+          "const": "Ed25519",
+          "description": "v0.1 supports Ed25519 only."
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]+=*$",
+          "minLength": 88,
+          "maxLength": 88,
+          "description": "Base64-encoded Ed25519 signature (64 raw bytes -> 88 base64 chars including padding)."
+        }
+      },
+      "required": ["key_id", "alg"],
+      "description-when-signed": "When verifying, signature.value MUST be present. The value field is omitted only during the canonical signing-input construction (see ADR 0001)."
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["allowed", "blocked", "logged_only"],
+      "description": "Per-action decision applied by the vendor."
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "tool_call",
+        "model_response",
+        "session_open",
+        "session_close",
+        "data_read",
+        "data_write",
+        "external_request"
+      ],
+      "description": "Canonical action types. Unknown types MUST be ignored by L1 receivers but logged."
+    },
+    "actor_kind": {
+      "type": "string",
+      "enum": ["vendor", "plane", "customer", "registry", "auditor"]
+    },
+    "conformance_level": {
+      "type": "string",
+      "enum": ["L1", "L2", "L3"]
+    }
+  }
+}

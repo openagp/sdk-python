@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/policy.json",
+  "title": "AGP policy descriptor (Flow B)",
+  "description": "Customer-authored policy delivered from plane to vendor. v0.1.",
+  "type": "object",
+  "properties": {
+    "agp_policy_version": {
+      "type": "string",
+      "pattern": "^0\\.1$"
+    },
+    "policy_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "policy_hash": { "$ref": "common.json#/$defs/hash_ref" },
+    "issuer": { "type": "string", "minLength": 1 },
+    "issued_at": { "$ref": "common.json#/$defs/iso8601_utc" },
+
+    "applies_to": {
+      "type": "object",
+      "properties": {
+        "vendors": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "common.json#/$defs/vendor_id" },
+              { "type": "string", "const": "*" }
+            ]
+          }
+        },
+        "agents": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "common.json#/$defs/action_type" }
+        }
+      }
+    },
+
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "when": {
+            "type": "object",
+            "description": "Predicate expressing field-level matchers. v0.1 grammar is YAML-shaped and informal; v0.2 will publish a formal DSL JSON Schema."
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "decision": { "$ref": "common.json#/$defs/decision" },
+              "reason": { "type": "string", "maxLength": 1024 },
+              "annotate": {
+                "type": "object",
+                "properties": {
+                  "scf_controls": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                }
+              }
+            },
+            "required": ["decision"]
+          }
+        },
+        "required": ["id", "when", "then"]
+      }
+    },
+
+    "fallback": {
+      "type": "object",
+      "description": "Behavior when the plane is unreachable for L3 decisions.",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["allow_with_log", "block"]
+        }
+      },
+      "required": ["decision"]
+    },
+
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string", "maxLength": 1024 },
+        "contact": { "type": "string", "maxLength": 255 }
+      }
+    },
+
+    "signature": { "$ref": "common.json#/$defs/signature" }
+  },
+
+  "required": [
+    "agp_policy_version",
+    "policy_id",
+    "policy_hash",
+    "issuer",
+    "issued_at",
+    "applies_to",
+    "rules",
+    "signature"
+  ]
+}

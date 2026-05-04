@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/decision-response.json",
+  "title": "AGP real-time decision response (Flow C, L3)",
+  "description": "Synchronous decision response from the plane to a vendor. v0.1.",
+  "type": "object",
+  "properties": {
+    "agp_version": { "$ref": "common.json#/$defs/agp_version" },
+    "decision_request_id": {
+      "$ref": "common.json#/$defs/decision_request_id",
+      "description": "MUST match the request's decision_request_id. Plane MUST NOT respond to a request id it has already responded to."
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["allowed", "blocked"],
+      "description": "Real-time decisions are binary; logged_only is not a valid Flow C response."
+    },
+    "rule_id": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "rationale": { "type": "string", "maxLength": 1024 },
+    "ttl_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3600,
+      "description": "Vendor MAY cache this decision for up to ttl_seconds for an identical proposed_action. Default 0 (no caching)."
+    },
+    "signature": { "$ref": "common.json#/$defs/signature" }
+  },
+  "required": [
+    "agp_version",
+    "decision_request_id",
+    "decision",
+    "rule_id",
+    "signature"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/decision-request.json",
+  "title": "AGP real-time decision request (Flow C, L3)",
+  "description": "Synchronous decision request from a vendor to the plane. v0.1.",
+  "type": "object",
+  "properties": {
+    "agp_version": { "$ref": "common.json#/$defs/agp_version" },
+    "decision_request_id": { "$ref": "common.json#/$defs/decision_request_id" },
+    "occurred_at": { "$ref": "common.json#/$defs/iso8601_utc" },
+
+    "actor": {
+      "type": "object",
+      "properties": {
+        "vendor": { "$ref": "common.json#/$defs/vendor_id" },
+        "agent_id": { "$ref": "common.json#/$defs/agent_id" },
+        "human_principal": { "$ref": "common.json#/$defs/human_principal" }
+      },
+      "required": ["vendor", "agent_id"]
+    },
+
+    "proposed_action": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "common.json#/$defs/action_type" },
+        "tool_name": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "target_resource": { "type": "string", "maxLength": 2048 },
+        "input_summary": { "type": "string", "maxLength": 2048 },
+        "input_hash": { "$ref": "common.json#/$defs/hash_ref" }
+      },
+      "required": ["type"]
+    },
+
+    "context": {
+      "type": "object",
+      "properties": {
+        "trace_id": { "$ref": "common.json#/$defs/trace_id" },
+        "policy_hash_in_use": { "$ref": "common.json#/$defs/hash_ref" }
+      }
+    },
+
+    "deadline_at": {
+      "$ref": "common.json#/$defs/iso8601_utc",
+      "description": "Vendor-declared deadline. Plane MUST respond before this timestamp; after, the vendor applies its policy fallback."
+    },
+
+    "signature": { "$ref": "common.json#/$defs/signature" }
+  },
+
+  "required": [
+    "agp_version",
+    "decision_request_id",
+    "occurred_at",
+    "actor",
+    "proposed_action",
+    "deadline_at",
+    "signature"
+  ]
+}
