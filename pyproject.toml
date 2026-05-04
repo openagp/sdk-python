@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "openagp"
-version = "0.0.0"
+version = "0.0.1"
 description = "Reference Python SDK for the Agent Governance Protocol (AGP)"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -37,9 +37,13 @@ dev = [
 
 [project.urls]
 Homepage = "https://openagp.io"
+Documentation = "https://github.com/openagp/spec/blob/main/concept-and-spec.md"
 Repository = "https://github.com/openagp/sdk-python"
 Specification = "https://github.com/openagp/spec"
+Conformance-Suite = "https://github.com/openagp/cts"
+Examples = "https://github.com/openagp/examples"
 Issues = "https://github.com/openagp/sdk-python/issues"
+Changelog = "https://github.com/openagp/sdk-python/releases"
 
 [tool.hatch.build.targets.wheel]
 packages = ["openagp"]

@@ -18,7 +18,7 @@ from openagp.events import (
 from openagp.keys import generate_keypair
 from openagp.policy import Decision, PolicyEvaluationError, evaluate
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 __all__ = [
     "__version__",
