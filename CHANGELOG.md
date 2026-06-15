@@ -10,6 +10,12 @@ While the SDK is pre-1.0, breaking changes are possible on any minor version bum
 
 _Nothing yet._
 
+## [0.0.2] — 2026-06-15
+
+### Added
+
+- **`actor` message kind.** `validate`, `sign`, and `verify` now accept `kind="actor"` for signing and validating registry actor entries, against the new bundled `actor.json` schema (synced from `openagp/spec`). This is the schema the public [registry](https://github.com/openagp/registry) validates entries against, and lets an actor self-sign its entry with the same ADR-0001 protocol used for events and policies.
+
 ## [0.0.1] — 2026-05-04
 
 Initial public release alongside AGP spec `v0.1.0-rc.1`.
