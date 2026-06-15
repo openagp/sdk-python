@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "openagp"
-version = "0.0.1"
+version = "0.0.2"
 description = "Reference Python SDK for the Agent Governance Protocol (AGP)"
 readme = "README.md"
 license = { text = "Apache-2.0" }
