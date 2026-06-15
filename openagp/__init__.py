@@ -18,7 +18,12 @@ from openagp.events import (
 from openagp.keys import generate_keypair
 from openagp.policy import Decision, PolicyEvaluationError, evaluate
 
-__version__ = "0.0.1"
+try:  # single source of truth: the installed package metadata (pyproject version)
+    from importlib.metadata import version as _pkg_version
+
+    __version__ = _pkg_version("openagp")
+except Exception:  # not installed (e.g. running from a source checkout)
+    __version__ = "0.0.0+local"
 
 __all__ = [
     "__version__",
