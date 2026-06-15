@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openagp.io/schemas/v0.1/actor.json",
+  "title": "AGP registry actor entry",
+  "description": "A signed registry record for an AGP-compliant actor (vendor, plane, or customer). One file per actor at registry/actors/<fqdn>.json. The entry is self-signed by one of the actor's advertised keys per ADR 0001; the registry merge attests that the entry is well-formed and its conformance report verifies, not that the actor's product is endorsed.",
+  "type": "object",
+  "properties": {
+    "agp_version": { "$ref": "common.json#/$defs/agp_version" },
+
+    "actor": {
+      "type": "object",
+      "description": "Actor identity. The fqdn MUST equal the entry's filename stem.",
+      "properties": {
+        "fqdn": { "$ref": "common.json#/$defs/vendor_id" },
+        "kind": { "$ref": "common.json#/$defs/actor_kind" },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Human-readable name shown in registry listings."
+        }
+      },
+      "required": ["fqdn", "kind"]
+    },
+
+    "conformance_levels": {
+      "type": "array",
+      "items": { "$ref": "common.json#/$defs/conformance_level" },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Levels this actor implements. L1 is implied by listing L2 or L3."
+    },
+
+    "public_keys": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "key_id": { "$ref": "common.json#/$defs/key_id" },
+          "purpose": {
+            "type": "string",
+            "enum": ["event_signing", "policy_signing", "decision_signing"]
+          },
+          "alg": { "type": "string", "const": "Ed25519" },
+          "value": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/]+=*$",
+            "minLength": 44,
+            "maxLength": 44,
+            "description": "Base64-encoded Ed25519 public key (32 raw bytes -> 44 base64 chars with padding)."
+          },
+          "valid_from": { "$ref": "common.json#/$defs/iso8601_utc" },
+          "valid_until": { "$ref": "common.json#/$defs/iso8601_utc" }
+        },
+        "required": ["key_id", "purpose", "alg", "value"]
+      },
+      "description": "Public keys this actor signs with. The key in signature.key_id MUST appear here."
+    },
+
+    "endpoints": {
+      "type": "object",
+      "description": "AGP endpoints this actor exposes. Field set varies by actor.kind.",
+      "properties": {
+        "discovery": { "type": "string", "format": "uri" },
+        "events_receive": { "type": "string", "format": "uri" },
+        "policy_receive": { "type": "string", "format": "uri" },
+        "policy_read": { "type": "string", "format": "uri" },
+        "decision_receive": { "type": "string", "format": "uri" }
+      }
+    },
+
+    "decision_budget_ms": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 10000,
+      "description": "For L3 actors: declared maximum wait for a decision response. Default 300."
+    },
+
+    "supported_action_types": {
+      "type": "array",
+      "items": { "$ref": "common.json#/$defs/action_type" },
+      "uniqueItems": true
+    },
+
+    "conformance_report": {
+      "type": "object",
+      "description": "Reference to the signed agp-cts report backing the claimed conformance_levels.",
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "hash": { "$ref": "common.json#/$defs/hash_ref" },
+        "cts_version": { "type": "string", "minLength": 1 },
+        "produced_at": { "$ref": "common.json#/$defs/iso8601_utc" }
+      },
+      "required": ["url", "hash"]
+    },
+
+    "registered_at": { "$ref": "common.json#/$defs/iso8601_utc" },
+
+    "metadata": {
+      "type": "object",
+      "description": "Advisory, human-facing fields. Not load-bearing for the protocol.",
+      "properties": {
+        "description": { "type": "string", "maxLength": 1024 },
+        "homepage": { "type": "string", "format": "uri" },
+        "contact": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "signature": { "$ref": "common.json#/$defs/signature" }
+  },
+
+  "required": [
+    "agp_version",
+    "actor",
+    "conformance_levels",
+    "public_keys",
+    "signature"
+  ]
+}

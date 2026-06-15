@@ -26,6 +26,7 @@ _SCHEMA_NAMES = (
     "decision-request.json",
     "decision-response.json",
     "discovery.json",
+    "actor.json",
 )
 
 
@@ -63,7 +64,7 @@ def validate(message: dict[str, Any], *, kind: str = "event") -> None:
     Raises SchemaValidationError on failure. Returns None on success.
 
     `kind` is one of: 'event', 'policy', 'decision-request',
-    'decision-response', 'discovery'.
+    'decision-response', 'discovery', 'actor'.
     """
     schema_name = f"{kind}.json"
     if schema_name not in _SCHEMA_NAMES:
